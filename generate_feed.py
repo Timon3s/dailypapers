@@ -183,7 +183,7 @@ def build_feed(entries):
 
         # Offset by rank so RSS readers sort highest-upvote papers first
         pub_dt = pub_dt.replace(hour=0, minute=0, second=0, microsecond=0)
-        pub_dt += datetime.timedelta(seconds=(len(entries) - i))
+        pub_dt += datetime.timedelta(minutes=(len(entries) - i))
 
         fe = fg.add_entry()
         fe.id(f"https://huggingface.co/papers/{arxiv_id}")
