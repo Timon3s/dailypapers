@@ -19,7 +19,7 @@ GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 
 
 def fetch_latest_papers():
-    for days_back in range(5):
+    for days_back in range(1, 6):
         date = (datetime.date.today() - datetime.timedelta(days=days_back)).strftime("%Y-%m-%d")
         try:
             resp = requests.get(
@@ -167,7 +167,7 @@ def build_feed(entries):
     fg.language("en")
     fg.lastBuildDate(datetime.datetime.now(datetime.timezone.utc))
 
-    for entry in entries:
+    for i, entry in enumerate(entries):
         paper_item = entry["paper_item"]
         p = paper_item.get("paper", {})
         arxiv_id = p.get("id", "")
@@ -180,6 +180,10 @@ def build_feed(entries):
             )
         except Exception:
             pub_dt = datetime.datetime.now(datetime.timezone.utc)
+
+        # Offset by rank so RSS readers sort highest-upvote papers first
+        pub_dt = pub_dt.replace(hour=0, minute=0, second=0, microsecond=0)
+        pub_dt += datetime.timedelta(seconds=(len(entries) - i))
 
         fe = fg.add_entry()
         fe.id(f"https://huggingface.co/papers/{arxiv_id}")
